@@ -1,13 +1,13 @@
 {
   "name": "omg-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "react ts cli",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "omg": "index.js"
+    "omg-react": "index.js"
   },
   "author": "jackchow",
   "license": "ISC",
