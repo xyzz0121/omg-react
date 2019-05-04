@@ -6,10 +6,11 @@ const fs = require('fs');
 const ora = require('ora');
 const chalk = require('chalk');
 const symbols = require('log-symbols');
-const remove =   require("./utils/remove");
-const modify =   require("./utils/modify");
+const remove = require("./utils/remove");
+const modify = require("./utils/modify");
+const { exec } = require('child_process');
 
-program.version('1.1.0', '-v, --version')
+program.version('1.1.3', '-v, --version')
     .command('init <name>')
     .action((name) => {
         if (!fs.existsSync(name)) {
@@ -34,7 +35,7 @@ program.version('1.1.0', '-v, --version')
                     message: 'need redux? (y/n):'
                 }
             ]).then((answers) => {
-                const spinner = ora('Omg, creating rapidly, please wait a moment...');
+                const spinner = ora('Omg, creating rapidly, please wait a couple of minutes....');
                 spinner.start();
                 const { isMobile, needRedux, needRouter } = answers;
                 //是不是移动端
@@ -49,24 +50,26 @@ program.version('1.1.0', '-v, --version')
                         spinner.fail();
                         console.log(symbols.error, chalk.red(err));
                     } else {
-                        spinner.succeed();
                         const meta = {
                             name,
                             description: answers.description,
-                            author: answers.author, 
+                            author: answers.author,
                             isNeedRedux,
                             isInMobile,
                             isNeedRouter
                         }
                         //修改模板
-                        modify(`${name}/src/index.tsx`,{isInMobile, isNeedRouter, isNeedRedux});
-                        modify(`${name}/src/index.html`,{isInMobile});
-                        modify(`${name}/src/components/Home/HomeContent/index.tsx`,{isNeedRouter,isNeedRedux});
-                        modify(`${name}/src/components/Home/HomeBtn/index.tsx`,{isNeedRedux});
-                        modify(`${name}/src/pages/index.ts`,{isNeedRouter});
-                        modify(`${name}/src/pages/Home/index.tsx`,{isNeedRedux});
-                        modify(`${name}/package.json`,meta);
-                        modify(`${name}/webpack.config.js`,{isInMobile});
+                        modify(`${name}/src/index.tsx`, { isInMobile, isNeedRouter, isNeedRedux });
+                        modify(`${name}/src/index.html`, { isInMobile });
+                        modify(`${name}/src/components/Home/HomeContent/index.tsx`, { isNeedRouter, isNeedRedux });
+                        modify(`${name}/src/components/Home/HomeContent/index.d.ts`, { isNeedRedux });
+                        modify(`${name}/src/components/Home/HomeBtn/index.tsx`, { isNeedRedux });
+                        modify(`${name}/src/components/Home/HomeBtn/index.d.ts`, { isNeedRedux });
+                        modify(`${name}/src/components/index.ts`, { isNeedRouter });
+                        modify(`${name}/src/pages/index.ts`, { isNeedRouter });
+                        modify(`${name}/src/pages/Home/index.tsx`, { isNeedRedux });
+                        modify(`${name}/package.json`, meta);
+                        modify(`${name}/webpack.config.js`, { isInMobile });
                         //删除多余文件
                         if (!isNeedRouter) {
                             remove(`${name}/src/routers`);
@@ -76,8 +79,15 @@ program.version('1.1.0', '-v, --version')
                         if (!isNeedRedux) {
                             remove(`${name}/src/store`);
                         }
-                        console.log(symbols.success, chalk.green('Done happily!'));
-                        console.log(symbols.success, chalk.green(`You can cd ./${name}`));
+                        child = exec(`cd ./${name} && npm install`,
+                            function (error, stdout, stderr) {
+                                spinner.succeed();
+                                console.log(symbols.success, chalk.green('Done happily!'));
+                                console.log(symbols.success, chalk.green(`You can cd ./${name}`));
+                                if (error !== null) {
+                                    console.log('exec error: ' + error);
+                                }
+                            });
                     }
                 })
             })
