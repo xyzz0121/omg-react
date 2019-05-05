@@ -84,7 +84,11 @@ program.version(version, '-v, --version')
                             function (error, stdout, stderr) {
                                 spinner.succeed();
                                 console.log(symbols.success, chalk.green('Done happily!'));
-                                console.log(symbols.success, chalk.green(`You can cd ./${name}`));
+                                console.log('');
+                                console.log(`  We suggest that you begin by typing:`);
+                                console.log('');
+                                console.log(chalk.green(`  cd ${name} `));
+                                console.log(chalk.green(`  npm start `));
                                 if (error !== null) {
                                     console.log('exec error: ' + error);
                                 }
