@@ -9,8 +9,9 @@ const symbols = require('log-symbols');
 const remove = require("./utils/remove");
 const modify = require("./utils/modify");
 const { exec } = require('child_process');
+const { version } = require('./package.json');
 
-program.version('1.1.3', '-v, --version')
+program.version(version, '-v, --version')
     .command('init <name>')
     .action((name) => {
         if (!fs.existsSync(name)) {

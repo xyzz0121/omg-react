@@ -2,6 +2,12 @@
 
 Init react apps with typescript and no configuration.
 
+##### Install：
+
+```
+npm i omg-react -g
+```
+
 ##### Getting Started：
 
 ```
